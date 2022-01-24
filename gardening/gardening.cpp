@@ -13,17 +13,14 @@ Flower *flowers;
 GroundTile** GroundTiles;
 
 
-int main(int argc, char** argv)
+int main()
 {
 	string BaseFolder = "..//gardening//gardeningDataFiles//";
-	for (int i = 0; i < argc; ++i)
-		cout << argv[i] << "\n";
-	//if (readFiles(BaseFolder + "garden1.txt" ,
-	//	BaseFolder + "flowers4.txt"))
-	if (readFiles(BaseFolder.append(argv[0]),
-		BaseFolder.append(argv[1])))
+
+	if (readFiles(BaseFolder + "garden1.txt" ,
+		BaseFolder + "flowers4.txt"))
 	{
-		cout << "Flower Loaded" << endl;
+		cout << endl << "Flowers Loaded" << endl;
 		for (size_t i = 0; i < flowersCount; i++)
 		{
 			cout << "|Flower " << (i + 1) << endl;
@@ -31,7 +28,7 @@ int main(int argc, char** argv)
 			cout << "  |count = " << flowers[i].count << "\n";
 			cout << "  |minDistance = " << flowers[i].minDistance << "\n";
 		}
-		cout << "************" << endl << endl;
+		cout << endl << "************" << endl << endl;
 		cout << "Ground Loaded" << endl;
 		for (size_t x = 0; x < gardenLayerCount; x++)
 		{
@@ -46,7 +43,7 @@ int main(int argc, char** argv)
 			}
 			cout << "\n";
 		}
-		cout << "************" << endl << endl;
+		cout << endl << "************" << endl << endl;
 		plantFlowers();
 
 		cout << "Flowers Planted" << endl;
@@ -157,8 +154,6 @@ bool readFiles(string gardenfile, string flowerfile)
 {
 	string gardenFilePath = gardenfile;
 	string flowersFilePath = flowerfile;
-	cout << gardenFilePath <<endl;
-	cout << flowersFilePath <<endl;
 	if (gardenFilePath == "")
 	{
 		cout << "Please enter the garden Layout File Path";

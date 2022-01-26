@@ -12,8 +12,14 @@ void Flower::init()
 {
 	TilesPlanted = new GroundTile[count];
 }
-void Flower::PlantFlower(GroundTile tile)
+void Flower::PlantFlower(GroundTile &tile)
 {
 	TilesPlanted[numberOfFlowersPlanted] = tile;
 	numberOfFlowersPlanted++;
+	tile.isFlowerPlanted = true;
+	tile.FlowerName = name;
+}
+bool Flower::HasMore()
+{
+	return numberOfFlowersPlanted < count;
 }

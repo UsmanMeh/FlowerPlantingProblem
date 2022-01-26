@@ -147,6 +147,7 @@
     <ClInclude Include="FileIO.h" />
     <ClInclude Include="Flower.h" />
     <ClInclude Include="GroundTile.h" />
+    <ClInclude Include="gardening.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

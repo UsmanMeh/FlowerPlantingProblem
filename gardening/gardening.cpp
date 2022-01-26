@@ -3,6 +3,7 @@
 
 
 #include "FileIO.h"
+#include "gardening.h"
 string *gardenLayoutData;
 string *flowersData;
 int gardenLayerCount = 0;
@@ -10,14 +11,14 @@ int tilesPerLayerCount = 0;
 int flowersCount = 0;
 
 Flower *flowers;
-GroundTile** GroundTiles;
+GroundTile** groundTiles;
 
 
 int main()
 {
 	string BaseFolder = "..//gardening//gardeningDataFiles//";
 
-	if (readFiles(BaseFolder + "garden1.txt" ,
+	if (readFiles(BaseFolder + "garden4.txt",
 		BaseFolder + "flowers4.txt"))
 	{
 		cout << endl << "Flowers Loaded" << endl;
@@ -34,9 +35,9 @@ int main()
 		{
 			for (size_t y = 0; y < tilesPerLayerCount; y++)
 			{
-				if (GroundTiles[x][y].isFlowerPlanted)
-					cout << GroundTiles[x][y].FlowerName;
-				else if (GroundTiles[x][y].isBlocked)
+				if (groundTiles[x][y].isFlowerPlanted)
+					cout << groundTiles[x][y].FlowerName;
+				else if (groundTiles[x][y].isBlocked)
 					cout << "X";
 				else
 					cout << " ";
@@ -44,16 +45,16 @@ int main()
 			cout << "\n";
 		}
 		cout << endl << "************" << endl << endl;
-		plantFlowers();
-
+		//plantFlowers();
+		PlantFlowersImproved();
 		cout << "Flowers Planted" << endl;
 		for (size_t x = 0; x < gardenLayerCount; x++)
 		{
 			for (size_t y = 0; y < tilesPerLayerCount; y++)
 			{
-				if (GroundTiles[x][y].isFlowerPlanted)
-					cout << GroundTiles[x][y].FlowerName;
-				else if (GroundTiles[x][y].isBlocked)
+				if (groundTiles[x][y].isFlowerPlanted)
+					cout << groundTiles[x][y].FlowerName;
+				else if (groundTiles[x][y].isBlocked)
 					cout << "X";
 				else
 					cout << " ";
@@ -65,20 +66,22 @@ int main()
 int manhattan_distance(int x1, int y1, int x2, int y2)
 {
 	double distance;
-	int x_dif, y_dif;
+	int xDif, yDif;
 
-	x_dif = x2 - x1;
-	y_dif = y2 - y1;
-	if (x_dif < 0)
-		x_dif = -x_dif;
-	if (y_dif < 0)
-		y_dif = -y_dif;
-	distance = x_dif + y_dif;
+	xDif = x2 - x1;
+	yDif = y2 - y1;
+	if (xDif < 0)
+		xDif = -xDif;
+	if (yDif < 0)
+		yDif = -yDif;
+	distance = xDif + yDif;
 	//cout << "\n\nManhattan Distance between P1(" << x1 << "," << y1 << ") and P2(" << x2 << "," << y2 << ") : " << distance;
 	return distance;
 }
 bool IsTileValid(int tileX, int tileY, Flower flowerToBePlanted)
 {
+	if(groundTiles[tileX][tileY].isBlocked || groundTiles[tileX][tileY].isFlowerPlanted)
+		return false;
 	if (flowerToBePlanted.numberOfFlowersPlanted == 0)
 		return true;
 	for (size_t i = 0; i < flowerToBePlanted.numberOfFlowersPlanted; i++)
@@ -100,52 +103,67 @@ void plantFlowers()
 			{
 				for (size_t y = 0; y < tilesPerLayerCount && !planted; y++)
 				{
-					if (!GroundTiles[x][y].isBlocked && !GroundTiles[x][y].isFlowerPlanted)
+					if (IsTileValid(x, y, flowers[i]))
 					{
-						if (IsTileValid(x, y, flowers[i]))
-						{
-							flowers[i].PlantFlower(GroundTiles[x][y]);
-							GroundTiles[x][y].FlowerName = flowers[i].name;
-							GroundTiles[x][y].isFlowerPlanted = true;
+						flowers[i].PlantFlower(groundTiles[x][y]);
+						j++;
+						if(j >= flowers[i].count)
 							planted = true;
-							continue;
-						}
+						continue;
 					}
+					
 				}
 			}
-			
+		}
+	}
+}
+
+void PlantFlowersImproved()
+{
+	for (size_t x = 0; x < gardenLayerCount; x++)
+	{
+		for (size_t y = 0; y < tilesPerLayerCount; y++)
+		{
+			for (size_t i = 0; i < flowersCount; i++)
+			{
+				if (IsTileValid(x, y, flowers[i]) && flowers[i].HasMore())
+				{
+					flowers[i].PlantFlower(groundTiles[x][y]);
+					continue;
+				}
+			}
 		}
 	}
 }
 
 bool loadFileData(string* (&fileData), string filePath, int& count)
 {
-	fstream my_file;
-	my_file.open(filePath, ios::in);
+	fstream myFile;
+	myFile.open(filePath, ios::in);
 	string line;
-	if (!my_file) {
+	if (!myFile) {
 		cout << "File not found!";
 		return 0;
 	}
 	else {
 		cout << "File found successfully!\n";
 		int numLines = 0;
-		while (getline(my_file, line)) { //read data from file object and put it into string.
+		while (getline(myFile, line)) { //read data from file object and put it into string.
 			numLines++;
 		}
 		count = numLines;
 		fileData = new string[numLines];
 		int index = 0;
-		my_file.clear();
-		my_file.seekg(0, ios::beg);
-		while (getline(my_file, line)) { //read data from file object and put it into string.
+		myFile.clear();
+		myFile.seekg(0, ios::beg);
+		while (getline(myFile, line)) { //read data from file object and put it into string.
 			fileData[index] = line;
 			//cout << line << "\n"; //print the data of the string
 			//cout << fileData[index] << "\n"; //print the data of the string
 			index++;
 		}
 
-		my_file.close();
+		myFile.close();
 		return 1;
 	}
 }
@@ -174,18 +192,18 @@ bool readFiles(string gardenfile, string flowerfile)
 	char* token;
 	const char* delim = ",";
 
-	GroundTiles = new GroundTile*[gardenLayerCount];
+	groundTiles = new GroundTile*[gardenLayerCount];
 	for (size_t i = 0; i < gardenLayerCount; i++)
 	{
 		char* input = const_cast<char*>(gardenLayoutData[i].c_str());
 		tilesPerLayerCount = strlen(input);
-		GroundTiles[i] = new GroundTile[tilesPerLayerCount];
+		groundTiles[i] = new GroundTile[tilesPerLayerCount];
 		for (size_t j = 0; j < tilesPerLayerCount; j++)
 		{
-			GroundTiles[i][j].isBlocked = input[j] == 'X';
-				GroundTiles[i][j].isFlowerPlanted = false;
-			GroundTiles[i][j].tile_x = i;
-			GroundTiles[i][j].tile_y = j;
+			groundTiles[i][j].isBlocked = input[j] == 'X';
+			groundTiles[i][j].isFlowerPlanted = false;
+			groundTiles[i][j].tile_x = i;
+			groundTiles[i][j].tile_y = j;
 		}
 	}
 

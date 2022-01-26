@@ -13,6 +13,11 @@ public:
 		GroundTile* TilesPlanted;
 
 		void init();
-		void PlantFlower(GroundTile tile);
+		void PlantFlower(GroundTile& tile);
+		/// <summary>
+		/// Checks if there are more flowers of this type left in the pool.
+		/// </summary>
+		/// <returns></returns>
+		bool HasMore();
 };
 
